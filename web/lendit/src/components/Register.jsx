@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, CheckCircle, ArrowRight } from "lucide-react";
 import "../css/Auth.css";
+import SuccessPopup from "./SucessPopup";
 
 const Register = ({ onSwitchToLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -20,7 +23,6 @@ const Register = ({ onSwitchToLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -40,6 +42,7 @@ const Register = ({ onSwitchToLogin }) => {
         body: JSON.stringify({
           fName: fName || "",
           lName: lName || "",
+          phone: formData.phone,
           email: formData.email,
           password: formData.password,
         }),
@@ -48,8 +51,7 @@ const Register = ({ onSwitchToLogin }) => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Account created successfully!");
-        onSwitchToLogin();
+        setShowSuccess(true);
       } else {
         alert(data);
       }
@@ -128,6 +130,23 @@ const Register = ({ onSwitchToLogin }) => {
           <div className="form-group">
             <div className="input-wrapper">
               <div className="icon-wrapper">
+                <User size={20} />
+              </div>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Phone Number"
+                required
+                className="input-field"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-wrapper">
+              <div className="icon-wrapper">
                 <Lock size={20} />
               </div>
               <input
@@ -196,6 +215,17 @@ const Register = ({ onSwitchToLogin }) => {
           </div>
         </div>
       </div>
+
+      {showSuccess && (
+        <SuccessPopup
+          title="Account Created!"
+          message="Your account is ready. Let's get you signed in."
+          onClose={() => {
+            setShowSuccess(false);
+            onSwitchToLogin();
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import "../css/Auth.css";
+import SuccessPopup from "./SucessPopup";
 
 const Login = ({ onSwitchToRegister, setUser }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [pendingUser, setPendingUser] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,7 +34,8 @@ const Login = ({ onSwitchToRegister, setUser }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setUser(data);
+        setPendingUser(data);
+        setShowSuccess(true);
       } else {
         alert(data);
       }
@@ -142,6 +146,17 @@ const Login = ({ onSwitchToRegister, setUser }) => {
           </div>
         </div>
       </div>
+
+      {showSuccess && (
+        <SuccessPopup
+          title="Welcome Back!"
+          message="You've successfully logged in."
+          onClose={() => {
+            setShowSuccess(false);
+            setUser(pendingUser);
+          }}
+        />
+      )}
     </div>
   );
 };

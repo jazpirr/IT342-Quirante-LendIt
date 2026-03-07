@@ -1,8 +1,13 @@
 package edu.cit.quirante.lendit.controller;
 
+import edu.cit.quirante.lendit.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import edu.cit.quirante.lendit.repository.UserRepository;
+import edu.cit.quirante.lendit.security.JwtUtil;
+
 import java.util.Optional;
 
 
