@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { LogOut, Mail, User } from "lucide-react";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import "./css/Home.css";
+import HomePage from "./components/Homepage";
 import "./css/PageTransition.css";
 
 function App() {
@@ -49,44 +48,7 @@ function App() {
 
   // Dashboard View
   if (user) {
-    return (
-      <div className="dashboard-container">
-        <div className="dashboard-blob-1"></div>
-        <div className="dashboard-blob-2"></div>
-
-        <div className="dashboard-card">
-          <div className="dashboard-header">
-            <h1 className="dashboard-title">Welcome, {user.fName}! 👋</h1>
-            <p className="dashboard-subtitle">You're successfully logged in</p>
-          </div>
-
-          <div className="user-info-card">
-            <div className="info-row">
-              <span className="info-label">
-                <User size={20} />
-                Full Name:
-              </span>
-              <span className="info-value">
-                {user.fName} {user.lName}
-              </span>
-            </div>
-
-            <div className="info-row">
-              <span className="info-label">
-                <Mail size={20} />
-                Email:
-              </span>
-              <span className="info-value">{user.email}</span>
-            </div>
-          </div>
-
-          <button onClick={handleLogout} className="logout-btn">
-            Logout
-            <LogOut size={18} />
-          </button>
-        </div>
-      </div>
-    );
+    return <HomePage user={user} onLogout={handleLogout} />;
   }
 
   return (
