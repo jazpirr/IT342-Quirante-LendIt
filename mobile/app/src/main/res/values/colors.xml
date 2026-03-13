@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    !-- Primary Green Palette -->
+    <color name="cadet_blue">#5F9EA0</color>
+    <color name="cadmium_green">#097969</color>
+    <color name="celadon">#AFEFAF</color>
+
+    <!-- RGB variants for gradients -->
+    <color name="cadet_blue_rgb">#5F9EA0</color>
+    <color name="cadmium_green_rgb">#097969</color>
+    <color name="celadon_rgb">#AFEFAF</color>
+
+    <!-- Semantic colors -->
+    <color name="primary">#097969</color>
+    <color name="primary_variant">#5F9EA0</color>
+    <color name="secondary">#AFEFAF</color>
+    <color name="secondary_variant">#78C578</color>
+
+    <!-- Surface and background -->
+    <color name="background">#F8FFF8</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F0FFF0</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#1A3A2E</color>
+    <color name="text_secondary">#4A6A5E</color>
+    <color name="text_hint">#8ABAAA</color>
+
+    <!-- Functional colors -->
+    <color name="error">#D32F2F</color>
+    <color name="success">#097969</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Overlay and shadow -->
+    <color name="overlay_light">#20097969</color>
+    <color name="overlay_dark">#60000000</color>
+    <color name="shadow">#40000000</color>
+</resources>
