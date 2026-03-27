@@ -1,0 +1,329 @@
+.aim-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 40, 30, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: aimBackdropIn 0.25s ease forwards;
+}
+
+@keyframes aimBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.aim-card {
+  background: #fff;
+  border-radius: 28px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 32px 80px rgba(9,121,105,0.22), 0 8px 32px rgba(0,0,0,0.08);
+  border: 1px solid rgba(9,121,105,0.1);
+  overflow: hidden;
+  animation: aimCardIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes aimCardIn {
+  from { opacity: 0; transform: scale(0.88) translateY(24px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.aim-stripe {
+  height: 5px;
+  background: linear-gradient(90deg, #AFEFAF 0%, #097969 50%, #5F9EA0 100%);
+}
+
+.aim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 0;
+}
+
+.aim-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aim-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #097969, #5F9EA0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(9,121,105,0.3);
+}
+
+.aim-title {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #1A3A2E;
+  letter-spacing: -0.3px;
+}
+
+.aim-subtitle {
+  font-size: 12px;
+  color: #8ABAAA;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 1px;
+}
+
+.aim-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(9,121,105,0.12);
+  background: #F0FFF4;
+  color: #4A6A5E;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.aim-close:hover {
+  background: #E8F5E9;
+  color: #097969;
+  transform: rotate(90deg);
+}
+
+.aim-body {
+  padding: 24px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.aim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.aim-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #097969;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aim-input,
+.aim-textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid rgba(9,121,105,0.18);
+  border-radius: 14px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: #1A3A2E;
+  background: #F9FFFE;
+  outline: none;
+  transition: all 0.2s ease;
+  resize: none;
+}
+
+.aim-input::placeholder,
+.aim-textarea::placeholder {
+  color: #8ABAAA;
+}
+
+.aim-input:focus,
+.aim-textarea:focus {
+  border-color: #097969;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(9,121,105,0.08);
+}
+
+.aim-textarea {
+  min-height: 90px;
+}
+
+.aim-dropzone {
+  border: 2px dashed rgba(9,121,105,0.25);
+  border-radius: 16px;
+  background: #F0FFF4;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+.aim-dropzone:hover,
+.aim-dropzone.dragover {
+  border-color: #097969;
+  background: #E8F5E9;
+}
+
+.aim-dropzone-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.aim-dropzone-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(9,121,105,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #097969;
+  margin-bottom: 4px;
+}
+
+.aim-dropzone-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A3A2E;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aim-dropzone-sub {
+  font-size: 12px;
+  color: #8ABAAA;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aim-preview-wrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 160px;
+}
+
+.aim-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aim-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(9,121,105,0.6) 0%, transparent 50%);
+  display: flex;
+  align-items: flex-end;
+  padding: 12px 14px;
+  gap: 6px;
+}
+
+.aim-preview-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aim-preview-change {
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aim-preview-change:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.aim-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.aim-cancel {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid rgba(9,121,105,0.2);
+  border-radius: 14px;
+  background: white;
+  color: #4A6A5E;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.aim-cancel:hover {
+  background: #F0FFF4;
+  border-color: #097969;
+  color: #097969;
+}
+
+.aim-submit {
+  flex: 2;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #097969, #5F9EA0);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(9,121,105,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.aim-submit::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.4s;
+}
+
+.aim-submit:hover:not(:disabled)::before { left: 100%; }
+
+.aim-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(9,121,105,0.4);
+}
+
+.aim-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aim-spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

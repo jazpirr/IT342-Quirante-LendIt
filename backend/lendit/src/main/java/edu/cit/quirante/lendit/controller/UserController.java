@@ -1,5 +1,7 @@
 package edu.cit.quirante.lendit.controller;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,14 @@ import edu.cit.quirante.lendit.security.AuthResponse;
 import edu.cit.quirante.lendit.security.JwtUtil;
 import edu.cit.quirante.lendit.service.UserService;
 import jakarta.servlet.http.HttpSession;
+
+// Google Auth
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+
 
 @RestController
 @RequestMapping(path = "/api/auth")
@@ -63,4 +73,33 @@ public class UserController {
         session.invalidate();
         return ResponseEntity.ok("Logged out successfully");
     }
+
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String name = body.get("name");
+
+        Optional<User> userOpt = userv.findByEmail(email);
+        User user;
+
+        if (userOpt.isPresent()) {
+            user = userOpt.get();
+        } else {
+            user = new User();
+            user.setEmail(email);
+
+            String[] names = name.split(" ");
+            user.setfName(names[0]);
+            user.setlName(names.length > 1 ? names[1] : "");
+
+            user.setPassword("GOOGLE_USER");
+            user = userv.createUser(user);
+        }
+
+        String token = jwtUtil.generateToken(user.getId());
+        user.setPassword(null);
+
+        return ResponseEntity.ok(new AuthResponse(token, user));
+    }
+
 }
