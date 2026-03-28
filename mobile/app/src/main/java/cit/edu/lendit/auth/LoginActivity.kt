@@ -4,6 +4,12 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.cardview.widget.CardView
 import android.util.Patterns
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -31,6 +37,11 @@ class LoginActivity : AppCompatActivity() {
 
         setupValidation()
         setupClickListeners()
+        if (intent.getBooleanExtra("SHOW_REGISTER_SUCCESS", false)) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                showSuccessBanner("Account created!", "Log in to get started")
+            }, 500L) // small delay so the screen finishes loading first
+        }
     }
 
     override fun onResume() {
@@ -53,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
                 .setInterpolator(DecelerateInterpolator())
                 .start()
         }
+
 
         binding.logoIcon.apply {
             scaleX = 0f
@@ -105,36 +117,31 @@ class LoginActivity : AppCompatActivity() {
 
     private fun animateBlob(view: View, duration: Long, reverse: Boolean = false) {
         val rotation = if (reverse) -360f else 360f
-        val animator = ObjectAnimator.ofFloat(view, View.ROTATION, 0f, rotation)
-        animator.duration = duration
-        animator.repeatCount = ObjectAnimator.INFINITE
-        animator.interpolator = DecelerateInterpolator()
-        animator.start()
+        ObjectAnimator.ofFloat(view, View.ROTATION, 0f, rotation).apply {
+            this.duration = duration
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = DecelerateInterpolator()
+            start()
+        }
     }
 
     private fun animateParticle(view: View, duration: Long, distance: Float) {
-        val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f, -distance, 0f)
-        animator.duration = duration
-        animator.repeatCount = ObjectAnimator.INFINITE
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        animator.start()
+        ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f, -distance, 0f).apply {
+            this.duration = duration
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
     }
 
     private fun setupValidation() {
-        binding.emailInput.addTextChangedListener {
-            binding.emailLayout.error = null
-        }
-
-        binding.passwordInput.addTextChangedListener {
-            binding.passwordLayout.error = null
-        }
+        binding.emailInput.addTextChangedListener { binding.emailLayout.error = null }
+        binding.passwordInput.addTextChangedListener { binding.passwordLayout.error = null }
     }
 
     private fun setupClickListeners() {
         binding.loginButton.setOnClickListener {
-            if (validateInputs()) {
-                performLogin()
-            }
+            if (validateInputs()) performLogin()
         }
 
         binding.forgotPassword.setOnClickListener {
@@ -142,8 +149,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.registerLink.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisterActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
     }
@@ -151,39 +157,31 @@ class LoginActivity : AppCompatActivity() {
     private fun validateInputs(): Boolean {
         val email = binding.emailInput.text.toString().trim()
         val password = binding.passwordInput.text.toString()
-
         var isValid = true
 
         if (email.isEmpty()) {
             binding.emailLayout.error = "Email is required"
-            shakeView(binding.emailLayout)
-            isValid = false
+            shakeView(binding.emailLayout); isValid = false
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             binding.emailLayout.error = "Please enter a valid email"
-            shakeView(binding.emailLayout)
-            isValid = false
+            shakeView(binding.emailLayout); isValid = false
         }
 
         if (password.isEmpty()) {
             binding.passwordLayout.error = "Password is required"
-            shakeView(binding.passwordLayout)
-            isValid = false
+            shakeView(binding.passwordLayout); isValid = false
         } else if (password.length < 6) {
             binding.passwordLayout.error = "Password must be at least 6 characters"
-            shakeView(binding.passwordLayout)
-            isValid = false
+            shakeView(binding.passwordLayout); isValid = false
         }
 
         return isValid
     }
 
     private fun shakeView(view: View) {
-        val animator = ObjectAnimator.ofFloat(
-            view, View.TRANSLATION_X,
+        ObjectAnimator.ofFloat(view, View.TRANSLATION_X,
             0f, 25f, -25f, 25f, -25f, 15f, -15f, 6f, -6f, 0f
-        )
-        animator.duration = 500
-        animator.start()
+        ).apply { duration = 500; start() }
     }
 
     private fun performLogin() {
@@ -192,42 +190,101 @@ class LoginActivity : AppCompatActivity() {
 
         showLoading(true)
 
-        val request = LoginRequest(email, password)
+        ApiClient.apiService.login(LoginRequest(email, password))
+            .enqueue(object : Callback<AuthResponse> {
+                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+                    showLoading(false)
 
-        ApiClient.apiService.login(request).enqueue(object : Callback<AuthResponse> {
-            override fun onResponse(
-                call: Call<AuthResponse>,
-                response: Response<AuthResponse>
-            ) {
-                showLoading(false)
+                    if (response.isSuccessful) {
+                        val token = response.body()?.token
+                        getSharedPreferences("auth", MODE_PRIVATE)
+                            .edit().putString("jwt", token).apply()
 
-                if (response.isSuccessful) {
-                    val authResponse = response.body()
-                    val token = authResponse?.token
+                        // Pass flag so DashboardActivity shows the success banner
+                        val intent = Intent(this@LoginActivity, DashboardActivity::class.java).apply {
+                            putExtra("SHOW_LOGIN_SUCCESS", true)
+                        }
+                        startActivity(intent)
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        finish()
 
-                    // Save JWT token
-                    val prefs = getSharedPreferences("auth", MODE_PRIVATE)
-                    prefs.edit().putString("jwt", token).apply()
-
-                    Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
-
-                    val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this@LoginActivity, "Invalid email or password", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Invalid email or password", Toast.LENGTH_LONG).show()
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                showLoading(false)
-                Toast.makeText(this@LoginActivity, "Server error: ${t.message}", Toast.LENGTH_LONG).show()
-            }
-        })
+                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+                    showLoading(false)
+                    Toast.makeText(this@LoginActivity, "Server error: ${t.message}", Toast.LENGTH_LONG).show()
+                }
+            })
     }
 
     private fun showLoading(show: Boolean) {
         binding.loadingOverlay.visibility = if (show) View.VISIBLE else View.GONE
         binding.loginButton.isEnabled = !show
     }
+
+    private fun showSuccessBanner(title: String, message: String) {
+        val rootView = window.decorView.findViewById<FrameLayout>(android.R.id.content)
+        val dp = resources.displayMetrics.density
+
+        val card = CardView(this).apply {
+            radius = 20f * dp
+            cardElevation = 14f * dp
+            setCardBackgroundColor(android.graphics.Color.parseColor("#097969")) // green
+            useCompatPadding = false
+        }
+
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val p = (16 * dp).toInt()
+            setPadding(p, p, p, p)
+        }
+
+        val tvTitle = TextView(this).apply {
+            text = title
+            textSize = 15f
+            typeface = android.graphics.Typeface.create("sans-serif-black", android.graphics.Typeface.BOLD)
+            setTextColor(android.graphics.Color.WHITE)
+        }
+        val tvMsg = TextView(this).apply {
+            text = message
+            textSize = 13f
+            alpha = 0.88f
+            typeface = android.graphics.Typeface.create("sans-serif-light", android.graphics.Typeface.NORMAL)
+            setTextColor(android.graphics.Color.WHITE)
+        }
+
+        row.addView(tvTitle)
+        row.addView(tvMsg)
+        card.addView(row)
+
+        val lp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = android.view.Gravity.TOP
+            setMargins((20 * dp).toInt(), (52 * dp).toInt(), (20 * dp).toInt(), 0)
+        }
+        rootView.addView(card, lp)
+
+        card.translationY = -(200f * dp)
+        card.alpha = 0f
+        card.animate()
+            .translationY(0f).alpha(1f)
+            .setDuration(450)
+            .setInterpolator(android.view.animation.OvershootInterpolator(1.1f))
+            .start()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            card.animate()
+                .translationY(-(200f * dp)).alpha(0f)
+                .setDuration(300)
+                .withEndAction { rootView.removeView(card) }
+                .start()
+        }, 3500L)
+    }
+
+
 }

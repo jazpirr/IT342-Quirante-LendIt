@@ -7,7 +7,7 @@
     android:background="@drawable/bg_gradient_login"
     tools:context=".LoginActivity">
 
-    <!-- Animated background blobs with different sizes -->
+    <!-- Background blobs -->
     <View
         android:id="@+id/blobTop"
         android:layout_width="320dp"
@@ -30,7 +30,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Additional floating element -->
     <View
         android:id="@+id/blobMiddle"
         android:layout_width="150dp"
@@ -43,7 +42,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Main content container with elevated design -->
+    <!-- Main card -->
     <androidx.cardview.widget.CardView
         android:id="@+id/loginCard"
         android:layout_width="0dp"
@@ -58,60 +57,81 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.42">
+        app:layout_constraintVertical_bias="0.45">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="36dp">
+            android:paddingStart="36dp"
+            android:paddingEnd="36dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp">
 
-            <!-- Animated accent bar -->
+            <!-- Logo row: icon + wordmark side by side (matches web) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="18dp">
+
+                <!-- Logo icon box with glow -->
+                <FrameLayout
+                    android:layout_width="56dp"
+                    android:layout_height="56dp">
+
+                    <View
+                        android:id="@+id/logoGlow"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/logo_glow"
+                        android:alpha="0.3" />
+
+                    <ImageView
+                        android:id="@+id/logoIcon"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_leaf_logo"
+                        android:contentDescription="@string/app_logo"
+                        android:tint="@color/primary" />
+                </FrameLayout>
+
+                <!-- App name wordmark -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textSize="22sp"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02"
+                    android:layout_marginStart="10dp" />
+            </LinearLayout>
+
+            <!-- Accent bar (centered, below logo row) -->
             <View
                 android:id="@+id/accentBar"
                 android:layout_width="60dp"
                 android:layout_height="5dp"
                 android:layout_gravity="center"
                 android:background="@drawable/accent_bar"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="22dp" />
 
-            <!-- Logo/Icon with pulse effect -->
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="20dp">
-
-                <!-- Glow effect behind logo -->
-                <View
-                    android:id="@+id/logoGlow"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/logo_glow"
-                    android:alpha="0.3" />
-
-                <ImageView
-                    android:id="@+id/logoIcon"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_leaf_logo"
-                    android:contentDescription="@string/app_logo"
-                    android:tint="@color/primary" />
-            </FrameLayout>
-
-            <!-- Welcome text with gradient effect -->
+            <!-- Welcome title -->
             <TextView
                 android:id="@+id/welcomeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/welcome_back"
-                android:textSize="36sp"
+                android:textSize="34sp"
                 android:textColor="@color/text_primary"
                 android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.01"
+                android:letterSpacing="-0.01"
                 android:layout_marginBottom="6dp" />
 
             <TextView
@@ -120,27 +140,27 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/login_subtitle"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="@color/text_secondary"
                 android:fontFamily="sans-serif-light"
-                android:layout_marginBottom="36dp" />
+                android:layout_marginBottom="32dp" />
 
-            <!-- Email input with enhanced design -->
+            <!-- Email input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="16dp"
                 app:boxStrokeColor="@color/primary"
                 app:hintTextColor="@color/primary"
-                app:boxCornerRadiusTopStart="18dp"
-                app:boxCornerRadiusTopEnd="18dp"
-                app:boxCornerRadiusBottomStart="18dp"
-                app:boxCornerRadiusBottomEnd="18dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
                 app:startIconDrawable="@drawable/ic_email"
                 app:startIconTint="@color/primary"
                 app:boxStrokeWidth="2dp"
-                app:boxStrokeWidthFocused="3dp"
+                app:boxStrokeWidthFocused="2dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -150,29 +170,29 @@
                     android:hint="@string/email"
                     android:inputType="textEmailAddress"
                     android:textColor="@color/text_primary"
-                    android:textSize="17sp"
-                    android:padding="18dp"
+                    android:textSize="16sp"
+                    android:padding="16dp"
                     android:fontFamily="sans-serif-medium" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Password input with enhanced design -->
+            <!-- Password input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/passwordLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 app:boxStrokeColor="@color/primary"
                 app:hintTextColor="@color/primary"
-                app:boxCornerRadiusTopStart="18dp"
-                app:boxCornerRadiusTopEnd="18dp"
-                app:boxCornerRadiusBottomStart="18dp"
-                app:boxCornerRadiusBottomEnd="18dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
                 app:startIconDrawable="@drawable/ic_lock"
                 app:startIconTint="@color/primary"
                 app:endIconMode="password_toggle"
                 app:endIconTint="@color/primary"
                 app:boxStrokeWidth="2dp"
-                app:boxStrokeWidthFocused="3dp"
+                app:boxStrokeWidthFocused="2dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -182,71 +202,116 @@
                     android:hint="@string/password"
                     android:inputType="textPassword"
                     android:textColor="@color/text_primary"
-                    android:textSize="17sp"
-                    android:padding="18dp"
+                    android:textSize="16sp"
+                    android:padding="16dp"
                     android:fontFamily="sans-serif-medium" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Forgot password with icon -->
-            <LinearLayout
+            <!-- Forgot password (right-aligned) -->
+            <TextView
+                android:id="@+id/forgotPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="28dp">
+                android:text="@string/forgot_password"
+                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:padding="8dp"
+                android:layout_marginBottom="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless" />
 
-                <TextView
-                    android:id="@+id/forgotPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/forgot_password"
-                    android:textColor="@color/primary"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:padding="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
-            </LinearLayout>
-
-            <!-- Login button with gradient background -->
+            <!-- Login button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/loginButton"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="58dp"
                 android:text="@string/login"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
                 android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.05"
-                app:cornerRadius="18dp"
+                android:letterSpacing="0.03"
+                app:cornerRadius="16dp"
                 app:backgroundTint="@null"
                 android:background="@drawable/button_gradient"
-                android:elevation="6dp"
+                android:elevation="4dp"
                 android:stateListAnimator="@null"
-
+                app:icon="@drawable/ic_check_circle"
                 app:iconGravity="end"
                 app:iconTint="@color/white"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="24dp" />
 
-            <!-- Register prompt with modern design -->
+            <!-- Divider "or continue with" -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#E8F0EE" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="or continue with"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_hint"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#E8F0EE" />
+            </LinearLayout>
+
+            <!-- Google Sign-In button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/googleButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Continue with Google"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-medium"
+                app:cornerRadius="14dp"
+                app:backgroundTint="@color/surface"
+                android:elevation="2dp"
+                android:stateListAnimator="@null"
+                app:strokeColor="#E8F0EE"
+                app:strokeWidth="1.5dp"
+                app:icon="@drawable/ic_google"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:iconTint="@null"
+                android:layout_marginBottom="20dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <!-- Sign up prompt -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:gravity="center"
-                android:background="@drawable/bg_register_prompt"
-                android:padding="16dp">
+                android:gravity="center">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/dont_have_account"
                     android:textColor="@color/text_secondary"
-                    android:textSize="15sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/registerLink"
@@ -254,19 +319,28 @@
                     android:layout_height="wrap_content"
                     android:text="@string/register"
                     android:textColor="@color/primary"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:fontFamily="sans-serif-black"
                     android:paddingStart="6dp"
-                    android:paddingEnd="12dp"
+                    android:paddingEnd="4dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="→"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:paddingStart="2dp" />
+
             </LinearLayout>
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Decorative floating particles -->
+    <!-- Decorative particles -->
     <View
         android:id="@+id/particle1"
         android:layout_width="8dp"
