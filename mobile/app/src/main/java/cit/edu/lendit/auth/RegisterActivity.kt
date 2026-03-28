@@ -3,15 +3,26 @@ package cit.edu.lendit.auth
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Patterns
+import android.view.Gravity
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import cit.edu.lendit.R
 import cit.edu.lendit.backendcon.ApiClient
 import cit.edu.lendit.databinding.ActivityRegisterBinding
 import cit.edu.lendit.models.RegisterRequest
@@ -102,18 +113,18 @@ class RegisterActivity : AppCompatActivity() {
         scaleAnimator.start()
     }
 
-    private fun animateBlob(view: View, duration: Long, reverse: Boolean = false) {
+    private fun animateBlob(view: View, animDuration: Long, reverse: Boolean = false) {
         val rotation = if (reverse) -360f else 360f
         val animator = ObjectAnimator.ofFloat(view, View.ROTATION, 0f, rotation)
-        animator.duration = duration
+        animator.duration = animDuration
         animator.repeatCount = ObjectAnimator.INFINITE
         animator.interpolator = DecelerateInterpolator()
         animator.start()
     }
 
-    private fun animateParticle(view: View, duration: Long, distance: Float) {
+    private fun animateParticle(view: View, animDuration: Long, distance: Float) {
         val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f, -distance, 0f)
-        animator.duration = duration
+        animator.duration = animDuration
         animator.repeatCount = ObjectAnimator.INFINITE
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.start()
@@ -137,9 +148,9 @@ class RegisterActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.termsText.setOnClickListener {
-            showTermsDialog()
-        }
+//        binding.termsText.setOnClickListener {
+//            showTermsDialog()
+//        }
     }
 
     private fun validateAllInputs(): Boolean {
@@ -191,24 +202,97 @@ class RegisterActivity : AppCompatActivity() {
                 showLoading(false)
 
                 if (response.isSuccessful) {
-                    MaterialAlertDialogBuilder(this@RegisterActivity)
-                        .setTitle("🎉 Registration Successful!")
-                        .setMessage("Your account has been created successfully!")
-                        .setPositiveButton("Login") { _, _ ->
-                            startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-                            finish()
-                        }
-                        .show()
+                    // Navigate to login and show the success banner there
+                    val intent = Intent(this@RegisterActivity, LoginActivity::class.java).apply {
+                        putExtra("SHOW_REGISTER_SUCCESS", true)
+
+                    }
+                    startActivity(intent)
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                    finish()
                 } else {
-                    Toast.makeText(this@RegisterActivity, "Email already exists", Toast.LENGTH_LONG).show()
+                    showErrorBanner("Registration failed", "This email is already in use")
                 }
             }
 
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
                 showLoading(false)
-                Toast.makeText(this@RegisterActivity, "Server error: ${t.message}", Toast.LENGTH_LONG).show()
+                showErrorBanner("Connection error", t.message ?: "Unable to reach server")
             }
         })
+    }
+
+    private fun showErrorBanner(title: String, message: String) {
+        showLoading(false)
+        val rootView = window.decorView.findViewById<FrameLayout>(android.R.id.content)
+        val dp = resources.displayMetrics.density
+
+        val card = buildBanner(
+            title = title,
+            message = message,
+            colorHex = "#C62828"
+        )
+
+        val lp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.TOP
+            setMargins((20 * dp).toInt(), (52 * dp).toInt(), (20 * dp).toInt(), 0)
+        }
+        rootView.addView(card, lp)
+
+        card.translationY = -(200f * dp)
+        card.alpha = 0f
+        card.animate()
+            .translationY(0f).alpha(1f)
+            .setDuration(450)
+            .setInterpolator(OvershootInterpolator(1.1f))
+            .start()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            card.animate()
+                .translationY(-(200f * dp)).alpha(0f)
+                .setDuration(300)
+                .withEndAction { rootView.removeView(card) }
+                .start()
+        }, 3000L)
+    }
+
+    private fun buildBanner(title: String, message: String, colorHex: String): CardView {
+        val dp = resources.displayMetrics.density
+
+        val card = CardView(this).apply {
+            radius = 20f * dp
+            cardElevation = 14f * dp
+            setCardBackgroundColor(android.graphics.Color.parseColor(colorHex))
+            useCompatPadding = false
+        }
+
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val p = (16 * dp).toInt()
+            setPadding(p, p, p, p)
+        }
+
+        val tvTitle = TextView(this).apply {
+            text = title
+            textSize = 15f
+            typeface = Typeface.create("sans-serif-black", Typeface.BOLD)
+            setTextColor(android.graphics.Color.WHITE)
+        }
+        val tvMsg = TextView(this).apply {
+            text = message
+            textSize = 13f
+            alpha = 0.88f
+            typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
+            setTextColor(android.graphics.Color.WHITE)
+        }
+
+        row.addView(tvTitle)
+        row.addView(tvMsg)
+        card.addView(row)
+        return card
     }
 
     private fun showTermsDialog() {
@@ -217,7 +301,7 @@ class RegisterActivity : AppCompatActivity() {
             .setMessage("By using LendIT, you agree to provide accurate information and follow community rules.")
             .setPositiveButton("I Understand") { dialog, _ ->
                 dialog.dismiss()
-                binding.termsCheckbox.isChecked = true
+//                binding.termsCheckbox.isChecked = true
             }
             .setNegativeButton("Cancel", null)
             .show()

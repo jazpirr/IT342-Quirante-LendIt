@@ -13,7 +13,7 @@ import edu.cit.quirante.lendit.entity.User;
 import edu.cit.quirante.lendit.security.AuthResponse;  
 import edu.cit.quirante.lendit.security.JwtUtil;
 import edu.cit.quirante.lendit.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 
 // Google Auth
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;

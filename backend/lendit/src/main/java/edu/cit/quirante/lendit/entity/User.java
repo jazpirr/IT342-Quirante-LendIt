@@ -2,7 +2,7 @@ package edu.cit.quirante.lendit.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
