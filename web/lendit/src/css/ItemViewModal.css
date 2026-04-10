@@ -1,0 +1,503 @@
+/* ItemViewModal.css - add to your existing AddItemModal.css */
+
+/* Card container - wider for split layout */
+.ivm-card {
+  background: #fff;
+  border-radius: 28px;
+  width: 100%;
+  max-width: 960px;
+  max-height: 85vh;
+  box-shadow: 0 32px 80px rgba(9, 121, 105, 0.22), 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(9, 121, 105, 0.1);
+  overflow: hidden;
+  animation: aimCardIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  position: relative;
+}
+
+/* Floating close button */
+.ivm-floating-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(9, 121, 105, 0.15);
+  color: #1A3A2E;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ivm-floating-close:hover {
+  background: #E8F5E9;
+  color: #097969;
+  transform: rotate(90deg);
+}
+
+/* Split layout */
+.ivm-split {
+  display: flex;
+  height: 100%;
+  max-height: 85vh;
+}
+
+/* LEFT: Gallery section */
+.ivm-gallery {
+  flex: 1.2;
+  background: #F9FFFE;
+  padding: 20px 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-right: 1px solid rgba(9, 121, 105, 0.08);
+  overflow-y: auto;
+}
+
+.ivm-main-image {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #F0FFF4;
+  aspect-ratio: 1 / 0.9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ivm-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ivm-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(9, 121, 105, 0.2);
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 600;
+  color: #097969;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ivm-nav.prev { left: 12px; }
+.ivm-nav.next { right: 12px; }
+
+.ivm-nav:hover {
+  background: #097969;
+  color: white;
+}
+
+.ivm-image-counter {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ivm-thumbnails {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.ivm-thumb {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.ivm-thumb.active {
+  border-color: #097969;
+}
+
+.ivm-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ivm-no-image {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #8ABAAA;
+  background: #F0FFF4;
+  border-radius: 20px;
+  min-height: 300px;
+}
+
+/* RIGHT: Content section */
+.ivm-content {
+  flex: 1;
+  padding: 24px 24px 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ivm-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #E8F5E9;
+  padding: 6px 12px;
+  border-radius: 40px;
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  color: #097969;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #00C853;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.ivm-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ivm-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #1A3A2E;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.ivm-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.ivm-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(9, 121, 105, 0.15);
+  background: white;
+  color: #4A6A5E;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ivm-icon-btn:hover {
+  border-color: #097969;
+  color: #097969;
+  transform: scale(1.05);
+}
+
+.ivm-icon-btn.saved {
+  color: #097969;
+  border-color: #097969;
+}
+
+/* Seller card */
+.ivm-seller-card {
+  background: #F0FFF4;
+  border-radius: 20px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(9, 121, 105, 0.1);
+}
+
+.ivm-seller-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #097969, #5F9EA0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ivm-seller-info {
+  flex: 1;
+}
+
+.ivm-seller-name {
+  font-weight: 700;
+  color: #1A3A2E;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+}
+
+.ivm-seller-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8ABAAA;
+  margin: 4px 0;
+}
+
+.ivm-seller-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #8ABAAA;
+}
+
+.ivm-message-btn {
+  padding: 8px 16px;
+  border-radius: 40px;
+  border: 1px solid #097969;
+  background: transparent;
+  color: #097969;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ivm-message-btn:hover {
+  background: #097969;
+  color: white;
+}
+
+/* Description */
+.ivm-description h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #097969;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ivm-description p {
+  font-size: 14px;
+  color: #4A6A5E;
+  line-height: 1.5;
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Details grid */
+.ivm-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background: #F9FFFE;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(9, 121, 105, 0.08);
+}
+
+.ivm-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #097969;
+}
+
+.ivm-detail-item div {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-label {
+  font-size: 10px;
+  color: #8ABAAA;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A3A2E;
+}
+
+/* Delivery options */
+.ivm-delivery {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ivm-delivery-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F0FFF4;
+  padding: 8px 14px;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1A3A2E;
+  border: 1px solid rgba(9, 121, 105, 0.1);
+}
+
+.delivery-icon {
+  font-size: 16px;
+}
+
+/* Action buttons */
+.ivm-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.ivm-cancel {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid rgba(9, 121, 105, 0.2);
+  border-radius: 14px;
+  background: white;
+  color: #4A6A5E;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.ivm-cancel:hover {
+  background: #F0FFF4;
+  border-color: #097969;
+  color: #097969;
+}
+
+.ivm-submit {
+  flex: 2;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #097969, #5F9EA0);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(9, 121, 105, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.ivm-submit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.4s;
+}
+
+.ivm-submit:hover::before {
+  left: 100%;
+}
+
+.ivm-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(9, 121, 105, 0.4);
+}
+
+/* Scrollbar styling */
+.ivm-gallery::-webkit-scrollbar,
+.ivm-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ivm-gallery::-webkit-scrollbar-track,
+.ivm-content::-webkit-scrollbar-track {
+  background: #F0FFF4;
+  border-radius: 4px;
+}
+
+.ivm-gallery::-webkit-scrollbar-thumb,
+.ivm-content::-webkit-scrollbar-thumb {
+  background: #097969;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 680px) {
+  .ivm-split {
+    flex-direction: column;
+  }
+  
+  .ivm-card {
+    max-width: 95%;
+    max-height: 90vh;
+  }
+  
+  .ivm-gallery {
+    border-right: none;
+    border-bottom: 1px solid rgba(9, 121, 105, 0.08);
+    padding: 16px;
+  }
+  
+  .ivm-content {
+    padding: 20px;
+  }
+  
+  .ivm-title {
+    font-size: 20px;
+  }
+}

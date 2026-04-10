@@ -1,23 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Home,
-  BookOpen,
-  Package,
-  Bell,
-  ChevronRight,
-  ChevronLeft,
-  Plus,
-  X,
-  Info,
-  LogOut,
-  User,
-  HandshakeIcon,
-  AlertTriangle,
+  Home, BookOpen, Package, Plus, X, Info,
+  LogOut, User, HandshakeIcon, AlertTriangle, Search
 } from "lucide-react";
 import "../css/Home.css";
 import "../css/popup.css";
 import ProfilePage from "./ProfilePage";
 import AddItemModal from "../components/AddItemModal";
+import ItemViewModal from "../components/ItemViewModal";
 
 const ImgPlaceholder = ({ size = 40 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -37,10 +27,8 @@ const LogoutPopup = ({ onConfirm, onCancel }) => (
           <AlertTriangle size={36} color="white" />
         </div>
       </div>
-
       <h2 className="success-title">Logging Out?</h2>
       <p className="success-message">Are you sure you want to log out?</p>
-
       <div className="logout-popup-actions">
         <button type="button" className="logout-btn-confirm" onClick={onConfirm}>
           <LogOut size={15} /> Yes, Logout
@@ -53,101 +41,6 @@ const LogoutPopup = ({ onConfirm, onCancel }) => (
   </div>
 );
 
-// ─── CAROUSEL COMPONENT ───
-const ItemCarousel = ({ items }) => {
-  const [current, setCurrent] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const limited = items.slice(0, 6);
-  const VISIBLE = 3;
-  const maxIndex = Math.max(0, limited.length - VISIBLE);
-
-  const go = (dir) => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrent((prev) =>
-      dir === "next"
-        ? Math.min(prev + 1, maxIndex)
-        : Math.max(prev - 1, 0)
-    );
-    setTimeout(() => setIsTransitioning(false), 500);
-  };
-
-  return (
-    <div className="carousel-wrapper">
-      {/* Prev Arrow */}
-      <button
-        className={`carousel-arrow carousel-arrow-left ${current === 0 ? "disabled" : ""}`}
-        onClick={() => go("prev")}
-        disabled={current === 0}
-      >
-        <ChevronLeft size={20} />
-      </button>
-
-      {/* Sliding Track Container */}
-      <div className="carousel-viewport">
-        <div
-          className="carousel-track-slider"
-          style={{
-            transform: `translateX(calc(-${current * (100 / limited.length)}%))`,
-            width: `${(limited.length / VISIBLE) * 100}%`,
-          }}
-        >
-          {limited.map((item, i) => (
-            <div
-              key={item.itemId}
-              className="item-card carousel-card"
-              style={{ width: `${100 / limited.length}%` }}
-            >
-              <div className="item-image">
-                {item.imageUrl ? (
-                  <img src={item.imageUrl} alt={item.name} className="item-img" />
-                ) : (
-                  <ImgPlaceholder size={48} />
-                )}
-                <span className="item-badge">Available</span>
-              </div>
-              <div className="item-info">
-                <div className="item-name">{item.name}</div>
-                <div className="item-owner">Owner ID: {item.ownerId}</div>
-                <button className="borrow-btn">
-                  <HandshakeIcon size={14} />
-                  Request to Borrow
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Next Arrow */}
-      <button
-        className={`carousel-arrow carousel-arrow-right ${current >= maxIndex ? "disabled" : ""}`}
-        onClick={() => go("next")}
-        disabled={current >= maxIndex}
-      >
-        <ChevronRight size={20} />
-      </button>
-
-      {/* Dots */}
-      <div className="carousel-dots">
-        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-          <button
-            key={i}
-            className={`carousel-dot ${i === current ? "active" : ""}`}
-            onClick={() => {
-              if (isTransitioning) return;
-              setIsTransitioning(true);
-              setCurrent(i);
-              setTimeout(() => setIsTransitioning(false), 500);
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ─── MAIN PAGE ───
 const HomePage = ({ user, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [announcementVisible, setAnnouncementVisible] = useState(true);
@@ -156,6 +49,12 @@ const HomePage = ({ user, onLogout }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [items, setItems] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchBarVisible, setSearchBarVisible] = useState(false);
+  const [searchBarSticky, setSearchBarSticky] = useState(false);
+
+  const searchSectionRef = useRef(null);
 
   const firstName = user?.fName || "User";
   const initials = `${user?.fName?.[0] || ""}${user?.lName?.[0] || ""}`.toUpperCase() || "U";
@@ -167,7 +66,25 @@ const HomePage = ({ user, onLogout }) => {
       .catch((err) => console.error(err));
   }, []);
 
-  // Close dropdown on outside click
+  // Sticky search bar on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (searchSectionRef.current) {
+        const rect = searchSectionRef.current.getBoundingClientRect();
+        setSearchBarSticky(rect.top <= 64); // navbar height
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Animate items in on load
+  useEffect(() => {
+    if (items.length > 0) {
+      setTimeout(() => setSearchBarVisible(true), 300);
+    }
+  }, [items]);
+
   useEffect(() => {
     const handler = (e) => {
       if (!e.target.closest(".nav-right")) setDropdownOpen(false);
@@ -175,6 +92,11 @@ const HomePage = ({ user, onLogout }) => {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const filteredItems = items.filter(item =>
+    item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (showProfile) {
     return <ProfilePage user={user} onBack={() => setShowProfile(false)} />;
@@ -186,7 +108,6 @@ const HomePage = ({ user, onLogout }) => {
       {/* NAVBAR */}
       <nav className="navbar">
         <span className="nav-logo-text">LendIt</span>
-
         <div className="nav-links">
           <button className={`nav-link ${activeNav === "home" ? "active" : ""}`} onClick={() => setActiveNav("home")}>
             <Home size={15} /> Home
@@ -198,36 +119,47 @@ const HomePage = ({ user, onLogout }) => {
             <Package size={15} /> My Items
           </button>
         </div>
-
         <div className="nav-right">
           <button className="avatar-btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
             {initials}
           </button>
-
           {dropdownOpen && (
             <div className="dropdown">
               <div className="dropdown-header">
                 <div className="dropdown-name">{user?.fName} {user?.lName}</div>
                 <div className="dropdown-email">{user?.email}</div>
               </div>
-
-              <button className="dropdown-item" onClick={() => {
-                setDropdownOpen(false);
-                setShowProfile(true);
-              }}>
+              <button className="dropdown-item" onClick={() => { setDropdownOpen(false); setShowProfile(true); }}>
                 <User size={15} /> Profile
               </button>
-
-              <button className="dropdown-item danger" onClick={() => {
-                setDropdownOpen(false);
-                setShowLogoutConfirm(true);
-              }}>
+              <button className="dropdown-item danger" onClick={() => { setDropdownOpen(false); setShowLogoutConfirm(true); }}>
                 <LogOut size={15} /> Logout
               </button>
             </div>
           )}
         </div>
       </nav>
+
+      {/* STICKY SEARCH BAR (appears on scroll) */}
+      {searchBarSticky && (
+        <div className="sticky-search-bar">
+          <div className="sticky-search-inner">
+            <Search size={16} className="sticky-search-icon" />
+            <input
+              className="sticky-search-input"
+              placeholder="Search items to borrow..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              autoFocus
+            />
+            {searchQuery && (
+              <button className="sticky-search-clear" onClick={() => setSearchQuery("")}>
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* MAIN */}
       <main className="dashboard-layout">
@@ -259,20 +191,68 @@ const HomePage = ({ user, onLogout }) => {
           </div>
         )}
 
-        {/* Carousel Section */}
+        {/* Search Section — inline (before sticky kicks in) */}
+        <div ref={searchSectionRef} className="search-section">
+          <div className="search-bar-inline">
+            <Search size={16} className="search-icon-inline" />
+            <input
+              className="search-input-inline"
+              placeholder="Search items to borrow..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button className="search-clear-inline" onClick={() => setSearchQuery("")}>
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Items Grid Section */}
         <div className="section">
           <div className="section-header">
-            <h2 className="section-title">Recently Added Items</h2>
-            <span className="section-link">View all →</span>
+            <h2 className="section-title">
+              {searchQuery ? `Results for "${searchQuery}"` : "Available Items"}
+            </h2>
+            <span className="section-count">
+              {filteredItems.length} item{filteredItems.length !== 1 ? "s" : ""}
+            </span>
           </div>
 
-          {items.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">📦</div>
-              <p>No items listed yet.</p>
+              <div className="empty-icon">{searchQuery ? "🔍" : "📦"}</div>
+              <p>{searchQuery ? "No items match your search." : "No items listed yet."}</p>
             </div>
           ) : (
-            <ItemCarousel items={items} />
+            <div className="items-grid">
+              {filteredItems.map((item, i) => (
+                <div
+                  key={item.itemId}
+                  className="item-card"
+                  style={{ animationDelay: `${i * 0.06}s` }}
+                  onClick={() => setSelectedItem(item)}
+                >
+                  <div className="item-image">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.name} className="item-img" />
+                    ) : (
+                      <ImgPlaceholder size={48} />
+                    )}
+                    <span className="item-badge">Available</span>
+                  </div>
+                  <div className="item-info">
+                    <div className="item-name">{item.name}</div>
+                    <div className="item-owner">Owner ID: {item.ownerId}</div>
+                    <button className="borrow-btn" onClick={e => { e.stopPropagation(); setSelectedItem(item); }}>
+                      <HandshakeIcon size={14} />
+                      Request to Borrow
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
@@ -287,6 +267,13 @@ const HomePage = ({ user, onLogout }) => {
         <AddItemModal
           onClose={() => setShowAddModal(false)}
           onItemAdded={(newItem) => setItems(prev => [...prev, newItem])}
+        />
+      )}
+
+      {selectedItem && (
+        <ItemViewModal
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
         />
       )}
 

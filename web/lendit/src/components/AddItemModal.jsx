@@ -1,55 +1,52 @@
 import { useState, useRef } from "react";
 import { supabase } from "../lib/supabase";
-import { X, Package, Loader2, ImagePlus, CheckCircle2 } from "lucide-react";
+import { X, Package, Loader2, ImagePlus, CheckCircle2, Plus } from "lucide-react";
 import "../css/AddItemModal.css";
 
 const AddItemModal = ({ onClose, onItemAdded }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef();
 
   const handleFile = (f) => {
     if (!f || !f.type.startsWith("image/")) return;
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
+    setFiles((prev) => [...prev, f]);
+    setPreviews((prev) => [...prev, URL.createObjectURL(f)]);
+  };
+
+  const handleRemove = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
-    handleFile(e.dataTransfer.files[0]);
+    Array.from(e.dataTransfer.files).forEach(handleFile);
   };
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
     setLoading(true);
 
-    let imageUrl = "";
-
-    if (file) {
-      const fileName = `${Date.now()}-${file.name}`;
+    let imageUrls = [];
+    for (let file of files) {
+      const fileName = `${Date.now()}-${Math.random()}-${file.name}`;
       const { error } = await supabase.storage.from("item-images").upload(fileName, file);
-      if (error) {
-        console.error(error);
-        setLoading(false);
-        return;
-      }
+      if (error) { console.error(error); setLoading(false); return; }
       const { data } = supabase.storage.from("item-images").getPublicUrl(fileName);
-      imageUrl = data.publicUrl;
+      imageUrls.push(data.publicUrl);
     }
 
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:8080/api/items/add", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ name, description, imageUrl }),
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ name, description, imageUrl: imageUrls[0], images: imageUrls }),
     });
 
     const newItem = await res.json();
@@ -102,26 +99,28 @@ const AddItemModal = ({ onClose, onItemAdded }) => {
           </div>
 
           <div className="aim-field">
-            <label className="aim-label">Photo</label>
+            <div className="aim-label-row">
+              <label className="aim-label">Photos</label>
+              {previews.length > 0 && (
+                <span className="aim-photo-count">
+                  {previews.length} photo{previews.length !== 1 ? "s" : ""} added
+                </span>
+              )}
+            </div>
+
             <input
               ref={fileRef}
               type="file"
               accept="image/*"
+              multiple
               style={{ display: "none" }}
-              onChange={(e) => handleFile(e.target.files[0])}
+              onChange={(e) => {
+                Array.from(e.target.files).forEach(handleFile);
+                fileRef.current.value = "";
+              }}
             />
 
-            {preview ? (
-              <div className="aim-preview-wrap">
-                <img src={preview} className="aim-preview-img" alt="preview" />
-                <div className="aim-preview-overlay">
-                  <span className="aim-preview-name">{file?.name}</span>
-                  <button className="aim-preview-change" onClick={() => fileRef.current.click()}>
-                    Change
-                  </button>
-                </div>
-              </div>
-            ) : (
+            {previews.length === 0 ? (
               <div
                 className={`aim-dropzone ${dragOver ? "dragover" : ""}`}
                 onClick={() => fileRef.current.click()}
@@ -134,7 +133,42 @@ const AddItemModal = ({ onClose, onItemAdded }) => {
                     <ImagePlus size={22} />
                   </div>
                   <div className="aim-dropzone-title">Drop your photo here</div>
-                  <div className="aim-dropzone-sub">or click to browse · PNG, JPG, WEBP</div>
+                  <div className="aim-dropzone-sub">or click to browse</div>
+                </div>
+              </div>
+            ) : (
+              <div
+                className={`aim-photo-layout ${dragOver ? "dragover" : ""}`}
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+              >
+                {/* Big featured / cover photo */}
+                <div className="aim-featured">
+                  <img src={previews[0]} className="aim-featured-img" alt="cover" />
+                  <span className="aim-featured-badge">Cover</span>
+                  <button className="aim-thumb-remove" onClick={() => handleRemove(0)}>
+                    <X size={10} />
+                  </button>
+                </div>
+
+                {/* Small thumbnails + add tile */}
+                <div className="aim-thumbs-row">
+                  {previews.slice(1).map((p, i) => (
+                    <div key={i + 1} className="aim-thumb">
+                      <img src={p} className="aim-thumb-img" alt={`photo-${i + 1}`} />
+                      <button
+                        className="aim-thumb-remove"
+                        onClick={() => handleRemove(i + 1)}
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="aim-add-tile" onClick={() => fileRef.current.click()}>
+                    <Plus size={18} />
+                    <span>Add</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -148,15 +182,9 @@ const AddItemModal = ({ onClose, onItemAdded }) => {
               disabled={!isValid || loading}
             >
               {loading ? (
-                <>
-                  <Loader2 size={16} className="aim-spinner" />
-                  Uploading…
-                </>
+                <><Loader2 size={16} className="aim-spinner" /> Uploading…</>
               ) : (
-                <>
-                  <CheckCircle2 size={16} />
-                  Add Item
-                </>
+                <><CheckCircle2 size={16} /> Add Item</>
               )}
             </button>
           </div>

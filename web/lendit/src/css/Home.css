@@ -776,3 +776,144 @@ body {
   opacity: 1;
   width: 24px;
 }
+
+/* ─── INLINE SEARCH (before sticky) ─── */
+.search-section {
+  margin-bottom: 24px;
+  animation: fadeUp 0.4s 0.15s ease both;
+}
+
+.search-bar-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1.5px solid var(--card-border);
+  border-radius: 16px;
+  padding: 0 16px;
+  height: 52px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar-inline:focus-within {
+  border-color: var(--green-deep);
+  box-shadow: 0 0 0 4px rgba(9,121,105,0.08);
+}
+
+.search-icon-inline {
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.search-input-inline {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-dark);
+  background: transparent;
+}
+
+.search-input-inline::placeholder {
+  color: var(--text-soft);
+}
+
+.search-clear-inline {
+  background: var(--green-pale);
+  border: none;
+  border-radius: 6px;
+  color: var(--text-mid);
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.search-clear-inline:hover {
+  background: rgba(9,121,105,0.15);
+}
+
+/* ─── STICKY SEARCH BAR ─── */
+.sticky-search-bar {
+  position: sticky;
+  top: 64px; /* below navbar */
+  z-index: 90;
+  background: rgba(240, 255, 244, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--card-border);
+  padding: 10px 24px;
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sticky-search-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1.5px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 44px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s;
+}
+
+.sticky-search-inner:focus-within {
+  border-color: var(--green-deep);
+}
+
+.sticky-search-icon {
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.sticky-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-dark);
+  background: transparent;
+}
+
+.sticky-search-input::placeholder {
+  color: var(--text-soft);
+}
+
+.sticky-search-clear {
+  background: var(--green-pale);
+  border: none;
+  border-radius: 6px;
+  color: var(--text-mid);
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+}
+
+/* ─── SECTION COUNT ─── */
+.section-count {
+  font-size: 13px;
+  color: var(--text-soft);
+  font-weight: 500;
+  background: var(--green-pale);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ─── ITEM CARD STAGGER ANIMATION ─── */
+.item-card {
+  animation: fadeUp 0.4s ease both;
+}
