@@ -14,14 +14,14 @@
 
 @keyframes aimBackdropIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 .aim-card {
   background: #fff;
   border-radius: 28px;
   width: 100%;
-  max-width: 480px;
+  max-width: 580px;
   box-shadow: 0 32px 80px rgba(9,121,105,0.22), 0 8px 32px rgba(0,0,0,0.08);
   border: 1px solid rgba(9,121,105,0.1);
   overflow: hidden;
@@ -30,7 +30,7 @@
 
 @keyframes aimCardIn {
   from { opacity: 0; transform: scale(0.88) translateY(24px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 
 .aim-stripe {
@@ -38,6 +38,7 @@
   background: linear-gradient(90deg, #AFEFAF 0%, #097969 50%, #5F9EA0 100%);
 }
 
+/* ── Header ── */
 .aim-header {
   display: flex;
   align-items: center;
@@ -97,6 +98,7 @@
   transform: rotate(90deg);
 }
 
+/* ── Body ── */
 .aim-body {
   padding: 24px 28px 28px;
   display: flex;
@@ -110,12 +112,24 @@
   gap: 7px;
 }
 
+.aim-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .aim-label {
   font-size: 12px;
   font-weight: 700;
   color: #097969;
   text-transform: uppercase;
   letter-spacing: 0.8px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aim-photo-count {
+  font-size: 11px;
+  color: #8ABAAA;
   font-family: 'DM Sans', sans-serif;
 }
 
@@ -132,12 +146,11 @@
   outline: none;
   transition: all 0.2s ease;
   resize: none;
+  box-sizing: border-box;
 }
 
 .aim-input::placeholder,
-.aim-textarea::placeholder {
-  color: #8ABAAA;
-}
+.aim-textarea::placeholder { color: #8ABAAA; }
 
 .aim-input:focus,
 .aim-textarea:focus {
@@ -146,17 +159,15 @@
   box-shadow: 0 0 0 4px rgba(9,121,105,0.08);
 }
 
-.aim-textarea {
-  min-height: 90px;
-}
+.aim-textarea { min-height: 80px; }
 
+/* ── Empty dropzone ── */
 .aim-dropzone {
   border: 2px dashed rgba(9,121,105,0.25);
   border-radius: 16px;
   background: #F0FFF4;
   cursor: pointer;
   transition: all 0.25s ease;
-  overflow: hidden;
 }
 
 .aim-dropzone:hover,
@@ -171,7 +182,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 28px 20px;
+  padding: 32px 20px;
   text-align: center;
 }
 
@@ -200,58 +211,128 @@
   font-family: 'DM Sans', sans-serif;
 }
 
-.aim-preview-wrap {
-  position: relative;
+/* ── Filled photo layout ── */
+.aim-photo-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 2px dashed rgba(9,121,105,0.18);
   border-radius: 16px;
-  overflow: hidden;
-  height: 160px;
+  padding: 10px;
+  background: #F0FFF4;
+  transition: border-color 0.25s ease;
 }
 
-.aim-preview-img {
+.aim-photo-layout.dragover {
+  border-color: #097969;
+  background: #E8F5E9;
+}
+
+/* ── Featured / cover photo ── */
+.aim-featured {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid rgba(9,121,105,0.2);
+}
+
+.aim-featured-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.aim-preview-overlay {
+.aim-featured-badge {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(9,121,105,0.6) 0%, transparent 50%);
-  display: flex;
-  align-items: flex-end;
-  padding: 12px 14px;
-  gap: 6px;
-}
-
-.aim-preview-name {
-  font-size: 12px;
-  font-weight: 600;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(9,121,105,0.85);
   color: white;
-  font-family: 'DM Sans', sans-serif;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.aim-preview-change {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  color: white;
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 8px;
-  padding: 4px 10px;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: all 0.2s;
   font-family: 'DM Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
 }
 
-.aim-preview-change:hover {
-  background: rgba(255,255,255,0.35);
+/* ── Thumbnails row ── */
+.aim-thumbs-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
+.aim-thumb {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid rgba(9,121,105,0.2);
+  flex-shrink: 0;
+}
+
+.aim-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* shared remove button (featured + thumb) */
+.aim-thumb-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+
+.aim-thumb-remove:hover { background: rgba(200,30,30,0.85); }
+
+/* ── Add tile ── */
+.aim-add-tile {
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  border: 2px dashed rgba(9,121,105,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #097969;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  background: rgba(9,121,105,0.04);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.aim-add-tile:hover {
+  background: rgba(9,121,105,0.1);
+  border-color: #097969;
+}
+
+/* ── Actions ── */
 .aim-actions {
   display: flex;
   gap: 10px;
@@ -326,4 +407,179 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+
+/* ── Item View: Gallery ── */
+.ivm-gallery {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid rgba(9,121,105,0.18);
+  background: #F0FFF4;
+}
+
+.ivm-featured-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.ivm-featured-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.ivm-featured-wrap:hover .ivm-featured-img {
+  transform: scale(1.02);
+}
+
+.ivm-featured-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(9,121,105,0.82);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ivm-img-count {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ivm-strip {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ivm-thumb {
+  width: 62px;
+  height: 62px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease;
+}
+
+.ivm-thumb.active { border-color: #097969; }
+
+.ivm-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ivm-no-image {
+  padding: 32px;
+  text-align: center;
+  color: #8ABAAA;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  border: 2px dashed rgba(9,121,105,0.2);
+  border-radius: 14px;
+}
+
+/* ── Info row ── */
+.ivm-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.ivm-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: #097969;
+  font-family: 'Fraunces', serif;
+}
+
+.ivm-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: #E8F5E9;
+  color: #097969;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Message button ── */
+.ivm-btn-message {
+  flex: 1.2;
+  padding: 14px;
+  border: 1.5px solid #097969;
+  border-radius: 14px;
+  background: transparent;
+  color: #097969;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+
+.ivm-btn-message:hover {
+  background: #E8F5E9;
+}
+
+.ivm-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.ivm-owner {
+  font-size: 13px;
+  color: #4A6A5E;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ivm-owner strong {
+  color: #1A3A2E;
+  font-weight: 700;
+}
+
+.ivm-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: #E8F5E9;
+  color: #097969;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-family: 'DM Sans', sans-serif;
 }
