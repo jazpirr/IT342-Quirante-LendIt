@@ -1,10 +1,35 @@
 import { useEffect, useState } from "react";
-import { X, Package, MessageCircle, HandshakeIcon } from "lucide-react";
+import { Package, MessageCircle, HandshakeIcon } from "lucide-react";
 import "../css/AddItemModal.css";
 
-const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
+const ItemViewModal = ({ item, user, onClose, onMessage, onBorrow, viewOnly = false }) => {
   const [images, setImages] = useState([]);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [returnDate, setReturnDate] = useState("");
+  const [alreadyRequested, setAlreadyRequested] = useState(false); 
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:8080/api/requests/item/${item.itemId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        const myRequest = data.find(
+          r =>
+            r.borrowerId === user.id &&
+            (r.status === "PENDING" || r.status === "APPROVED")
+        );
+
+        if (myRequest) {
+          setAlreadyRequested(true);
+        }
+      })
+      .catch(err => console.error(err));
+  }, [item, user]);
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/items/${item.itemId}/images`)
@@ -18,7 +43,7 @@ const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
       <div className="aim-card" onClick={e => e.stopPropagation()}>
         <div className="aim-stripe" />
 
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="aim-header">
           <div className="aim-title-group">
             <div className="aim-icon-wrap">
@@ -33,7 +58,7 @@ const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
 
         <div className="aim-body">
 
-          {/* ── Gallery ── */}
+          {/* Gallery */}
           {images.length > 0 ? (
             <div className="ivm-gallery">
               <div className="ivm-featured-wrap">
@@ -49,7 +74,6 @@ const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
                   {activeIdx + 1} / {images.length}
                 </span>
               </div>
-
               {images.length > 1 && (
                 <div className="ivm-strip">
                   {images.map((img, i) => (
@@ -68,7 +92,7 @@ const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
             <div className="ivm-no-image">No images available</div>
           )}
 
-          {/* ── Status pill only ── */}
+          {/* Status row */}
           <div className="ivm-info-row">
             <span className="ivm-owner">
               Posted by <strong>{item.ownerName || "a member"}</strong>
@@ -76,7 +100,7 @@ const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
             <span className="ivm-status-pill">Available to Borrow</span>
           </div>
 
-          {/* ── Description ── */}
+          {/* Description */}
           <div className="aim-field">
             <label className="aim-label">Description</label>
             <div className="aim-textarea" style={{ background: "#F9FFFE", minHeight: 52 }}>
@@ -84,17 +108,35 @@ const ItemViewModal = ({ item, onClose, onMessage, onBorrow }) => {
             </div>
           </div>
 
-          {/* ── Actions ── */}
-          <div className="aim-actions">
-            <button className="ivm-btn-message" onClick={onMessage}>
-              <MessageCircle size={15} />
-              Message
-            </button>
-            <button className="aim-submit" onClick={onBorrow}>
-              <HandshakeIcon size={15} />
-              Borrow
-            </button>
-          </div>
+          {/* Return Date — hidden in viewOnly mode */}
+          {!viewOnly && (
+            <div className="aim-field">
+              <label className="aim-label">Return Date</label>
+              <input
+                type="date"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                className="aim-input"
+              />
+            </div>
+          )}
+
+          {/* Actions — hidden in viewOnly mode */}
+          {!viewOnly && (
+            <div className="aim-actions">
+              <button className="ivm-btn-message" onClick={onMessage}>
+                <MessageCircle size={15} /> Message
+              </button>
+              <button
+                className="aim-submit"
+                disabled={alreadyRequested}
+                onClick={() => onBorrow(item, returnDate)}
+              >
+                <HandshakeIcon size={15} />
+                {alreadyRequested ? "Already Requested" : "Borrow"}
+              </button>
+            </div>
+          )}
 
         </div>
       </div>

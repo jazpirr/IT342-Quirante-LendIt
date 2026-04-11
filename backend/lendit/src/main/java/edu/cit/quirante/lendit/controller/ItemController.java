@@ -73,4 +73,12 @@ public class ItemController {
     public ResponseEntity<?> getImages(@PathVariable Integer id) {
         return ResponseEntity.ok(itemService.getImagesByItem(id));
     }
-}
+
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyItems(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        Integer userId = jwtUtil.extractUserId(token);
+
+        return ResponseEntity.ok(itemService.getItemsByOwner(userId));
+    }
+    }
