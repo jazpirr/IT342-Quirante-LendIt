@@ -3,9 +3,11 @@ package edu.cit.quirante.lendit.controller;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -34,6 +36,9 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User newUser) {
         try {
@@ -56,18 +61,22 @@ public class UserController {
 
         User user = userOpt.get();
 
+        // 🚨 Detect Google-only account (no password set yet)
+        if (user.getPassword() == null || passwordEncoder.matches("GOOGLE_USER", user.getPassword())) {
+            return ResponseEntity.status(400).body("This account uses Google login. Please continue with Google or set a password.");
+        }
+
+        // 🔐 Check password
         if (!userv.checkPassword(user, loginData.getPassword())) {
             return ResponseEntity.status(401).body("Invalid password");
         }
 
         String token = jwtUtil.generateToken(user.getId());
-
         user.setPassword(null);
 
-        return ResponseEntity.ok(
-            new AuthResponse(token, user)
-        );
+        return ResponseEntity.ok(new AuthResponse(token, user));
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session) {
         session.invalidate();
@@ -76,14 +85,22 @@ public class UserController {
 
     @PostMapping("/google")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
+
         String email = body.get("email");
         String name = body.get("name");
+        String imageUrl = body.get("imageUrl");
 
         Optional<User> userOpt = userv.findByEmail(email);
         User user;
 
         if (userOpt.isPresent()) {
             user = userOpt.get();
+
+            if (user.getImageUrl() == null && imageUrl != null) {
+                user.setImageUrl(imageUrl);
+                user = userv.updateUser(user);
+            }
+
         } else {
             user = new User();
             user.setEmail(email);
@@ -92,7 +109,9 @@ public class UserController {
             user.setfName(names[0]);
             user.setlName(names.length > 1 ? names[1] : "");
 
-            user.setPassword("GOOGLE_USER");
+            user.setPassword("GOOGLE_USER"); // placeholder only
+            user.setImageUrl(imageUrl);
+
             user = userv.createUser(user);
         }
 
@@ -100,6 +119,29 @@ public class UserController {
         user.setPassword(null);
 
         return ResponseEntity.ok(new AuthResponse(token, user));
+    }
+        
+
+    @PostMapping("/set-password")
+    public ResponseEntity<?> setPassword(@RequestBody Map<String, String> body) {
+
+        String email = body.get("email");
+        String newPassword = body.get("password");
+
+        Optional<User> userOpt = userv.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        User user = userOpt.get();
+
+        // ✅ HASH PASSWORD
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        user = userv.updateUser(user);
+
+        return ResponseEntity.ok("Password set successfully");
     }
 
 }

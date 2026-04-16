@@ -25,6 +25,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     public User() {}
 
     public User(Integer id, String fName, String lName, String email, String password) {
@@ -80,5 +83,13 @@ public class User {
     }
     public void setPhone(String phone) {
         this.phone = phone; 
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

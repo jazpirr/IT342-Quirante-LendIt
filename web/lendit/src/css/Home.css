@@ -917,3 +917,30 @@ body {
 .item-card {
   animation: fadeUp 0.4s ease both;
 }
+
+/* ─── AVATAR BUTTON ─── */
+.avatar-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #097969, #5F9EA0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-initials {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}

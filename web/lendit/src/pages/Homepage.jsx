@@ -143,7 +143,15 @@ const HomePage = ({ user, onLogout }) => {
         </div>
         <div className="nav-right">
           <button className="avatar-btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
-            {initials}
+            {user?.imageUrl ? (
+              <img
+                src={user.imageUrl}
+                alt="Profile"
+                className="avatar-img"
+              />
+            ) : (
+              <span className="avatar-initials">{initials}</span>
+            )}
           </button>
           {dropdownOpen && (
             <div className="dropdown">
