@@ -37,4 +37,8 @@ public class UserService {
     public boolean checkPassword(User user, String rawPassword) {
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
+
+    public User updateUser(User user) {
+        return urepo.save(user);
+    }
 }

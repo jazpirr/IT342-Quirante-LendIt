@@ -10,34 +10,29 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [user, setUser] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
+  const [showLanding, setShowLanding] = useState(false);
 
-  // Check session on load
+  // ✅ RESTORE SESSION (SAFE)
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
+    const storedUser =
+      localStorage.getItem("user") ||
+      sessionStorage.getItem("user");
 
-      if (data.user) {
-        // send to backend
-        const res = await fetch("http://localhost:8080/api/auth/google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: data.user.email,
-            name: data.user.user_metadata.full_name,
-          }),
-        });
+    const storedToken =
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token");
 
-        const backendUser = await res.json();
-        setUser(backendUser.user);
-        localStorage.setItem("token", backendUser.token);
+    if (storedUser && storedToken && storedUser !== "undefined") {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setShowLanding(false); 
+      } catch (e) {
+        console.error("Invalid stored user:", storedUser);
       }
-    };
-
-    getUser();
+    }
   }, []);
+
 
   const handleLogout = async () => {
     await fetch("http://localhost:8080/api/auth/logout", {
@@ -45,10 +40,15 @@ function App() {
       credentials: "include",
     });
 
-    await supabase.auth.signOut(); // optional but clean
-    localStorage.removeItem("token"); // 🔥 critical
+    await supabase.auth.signOut();
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
 
     setUser(null);
+    setShowLanding(true);
   };
 
   const switchToRegister = () => {
@@ -67,33 +67,29 @@ function App() {
     }, 300);
   };
 
-  // Dashboard View
+  // ✅ If logged in → homepage
   if (user) {
     return <HomePage user={user} onLogout={handleLogout} />;
   }
 
+  // ✅ Landing page
   if (showLanding) {
-    return <LandingPage onGetStarted={() => setShowLanding(false)} />;
+    return (
+      <LandingPage
+        onGetStarted={() => setShowLanding(false)}
+      />
+    );
   }
 
+  // ✅ Auth pages
   return (
     <div className={`page-transition-wrapper ${isTransitioning ? "transitioning" : ""}`}>
       {showLogin ? (
         <div key="login" className="page-content">
-          <Login setUser={setUser} onSwitchToRegister={switchToRegister} />
-        </div>
-      ) : (
-        <div key="register" className="page-content">
-          <Register onSwitchToLogin={switchToLogin} />
-        </div>
-      )}
-    </div>
-  );
-  return (
-    <div className={`page-transition-wrapper ${isTransitioning ? "transitioning" : ""}`}>
-      {showLogin ? (
-        <div key="login" className="page-content">
-          <Login setUser={setUser} onSwitchToRegister={switchToRegister} />
+          <Login
+            setUser={setUser}
+            onSwitchToRegister={switchToRegister}
+          />
         </div>
       ) : (
         <div key="register" className="page-content">
