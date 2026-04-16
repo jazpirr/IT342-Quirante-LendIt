@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/LandingPage.css";
 
 // Soft pastel colors for item placeholders (like image 2)
@@ -19,6 +20,8 @@ const LandingPage = ({ onGetStarted }) => {
   const [scrolled, setScrolled] = useState(false);
   const [items, setItems] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -82,8 +85,12 @@ const LandingPage = ({ onGetStarted }) => {
           </div>
 
           <div className="landing-nav-actions">
-            <button className="landing-btn-ghost" onClick={onGetStarted}>Log in</button>
-            <button className="landing-btn-primary" onClick={onGetStarted}>Get Started</button>
+            <button className="landing-btn-ghost" onClick={() => navigate("/login")}>
+              Log in
+            </button>
+            <button className="landing-btn-primary" onClick={onGetStarted}>
+              Get Started
+            </button>
           </div>
         </div>
       </nav>

@@ -116,13 +116,44 @@ const MyItems = () => {
               requests.map((req) => (
                 <div key={req.id} className="mi-request-row">
                   <div className="mi-request-avatar">
-                    {getInitials(req.borrowerName)}
+                    {req.imageUrl ? (
+                      <img
+                        src={req.imageUrl}
+                        alt="profile"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: "50%",
+                          objectFit: "cover"
+                        }}
+                      />
+                    ) : (
+                      getInitials(req.borrowerName)
+                    )}
                   </div>
                   <div className="mi-request-info">
                     <p className="mi-request-user">{req.borrowerName || `User #${req.borrowerId}`}</p>
                     <p className="mi-request-date">
-                      {req.createdAt ? new Date(req.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recently"}
+                      Requested:{" "}
+                      {req.requestedAt
+                        ? new Date(req.requestedAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric"
+                          })
+                        : "Recently"}
                     </p>
+
+                    {req.returnDate && (
+                      <p className="mi-request-return">
+                        Return:{" "}
+                        {new Date(req.returnDate).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric"
+                        })}
+                      </p>
+                    )}
                   </div>
                   <span className={`mi-status-badge ${req.status?.toLowerCase()}`}>
                     {req.status?.charAt(0) + req.status?.slice(1).toLowerCase()}
@@ -136,6 +167,11 @@ const MyItems = () => {
                         Reject
                       </button>
                     </div>
+                  )}
+                  {req.status === "APPROVED" && req.returnDate && (
+                    <p className="mi-request-return" style={{ color: "#16a34a", fontWeight: "500" }}>
+                      Return by: {new Date(req.returnDate).toLocaleDateString()}
+                    </p>
                   )}
                 </div>
               ))

@@ -86,8 +86,12 @@ const HomePage = ({ user, onLogout }) => {
   }, []);
 
   const filteredItems = items.filter(item =>
-    item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    item.ownerId !== user?.id &&
+    item.availability === "AVAILABLE" &&   // ✅ ADD THIS
+    (
+      item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
 
   const handleBorrow = async (item, returnDate) => {
@@ -159,7 +163,7 @@ const HomePage = ({ user, onLogout }) => {
                 <div className="dropdown-name">{user?.fName} {user?.lName}</div>
                 <div className="dropdown-email">{user?.email}</div>
               </div>
-              <button className="dropdown-item" onClick={() => { setDropdownOpen(false); setShowProfile(true); }}>
+              <button className="dropdown-item" onClick={() => { setDropdownOpen(false); window.location.href = "/profile"; }}>
                 <User size={15} /> Profile
               </button>
               <button className="dropdown-item danger" onClick={() => { setDropdownOpen(false); setShowLogoutConfirm(true); }}>
@@ -273,7 +277,9 @@ const HomePage = ({ user, onLogout }) => {
                         ) : (
                           <ImgPlaceholder size={48} />
                         )}
-                        <span className="item-badge">Available</span>
+                        <span className="item-badge">
+                          {item.availability === "AVAILABLE" ? "Available" : "Borrowed"}
+                        </span>
                       </div>
                       <div className="item-info">
                         <div className="item-name">{item.name}</div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import "../css/Auth.css";
 import SuccessPopup from "../components/SucessPopup";
@@ -29,6 +30,8 @@ const Login = ({ onSwitchToRegister, setUser, onBack }) => {
   const [pendingUser, setPendingUser] = useState(null);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
+  const navigate = useNavigate();
+
   const googleHandled = useRef(false);
 
 
@@ -39,10 +42,11 @@ const Login = ({ onSwitchToRegister, setUser, onBack }) => {
 
         if (event !== "SIGNED_IN") return;
         if (!session?.user) return;
-        if (googleHandled.current) return;
 
-        // 🚨 CRITICAL FIX (THIS IS WHAT YOU ARE MISSING)
+        // ✅ THIS LINE FIXES YOUR ISSUE
         if (!session.provider_token) return;
+
+        if (googleHandled.current) return;
 
         googleHandled.current = true;
 
@@ -57,19 +61,15 @@ const Login = ({ onSwitchToRegister, setUser, onBack }) => {
             })
           });
 
-          let data;
-          try {
-            data = await res.json();
-          } catch (err) {
-            console.error("Invalid JSON response");
-            return;
-          }
+          const data = await res.json();
 
-       
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
+
           setUser(data.user);
 
+          // ✅ FORCE REDIRECT (VERY IMPORTANT)
+          navigate("/home");
 
         } catch (err) {
           console.error(err);
@@ -78,7 +78,7 @@ const Login = ({ onSwitchToRegister, setUser, onBack }) => {
     );
 
     return () => listener.subscription.unsubscribe();
-  }, [setUser]);
+  }, [setUser, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -86,7 +86,12 @@ const Login = ({ onSwitchToRegister, setUser, onBack }) => {
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
-    await supabase.auth.signInWithOAuth({ provider: "google" });
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:3000/login"
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
