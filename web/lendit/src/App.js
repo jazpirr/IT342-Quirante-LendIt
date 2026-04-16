@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import HomePage from "./pages/Homepage";
 import LandingPage from "./pages/Landingpage";
-import "./css/PageTransition.css";
+import ProfilePage from "./pages/ProfilePage";
+
 import { supabase } from "./lib/supabase";
 
 function App() {
-  const [showLogin, setShowLogin] = useState(true);
   const [user, setUser] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showLanding, setShowLanding] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ RESTORE SESSION (SAFE)
+  // ✅ Restore session
   useEffect(() => {
     const storedUser =
       localStorage.getItem("user") ||
@@ -24,15 +25,40 @@ function App() {
 
     if (storedUser && storedToken && storedUser !== "undefined") {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        setShowLanding(false); 
+        setUser(JSON.parse(storedUser));
       } catch (e) {
         console.error("Invalid stored user:", storedUser);
       }
     }
+
+    setLoading(false); // ✅ VERY IMPORTANT
   }, []);
 
+
+  // ✅ Listen for Google login
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event) => {
+        if (event === "SIGNED_IN") {
+          console.log("Google login detected");
+
+          const storedUser =
+            localStorage.getItem("user") ||
+            sessionStorage.getItem("user");
+
+          if (storedUser && storedUser !== "undefined") {
+            try {
+              setUser(JSON.parse(storedUser));
+            } catch (e) {
+              console.error("Invalid stored user:", storedUser);
+            }
+          }
+        }
+      }
+    );
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   const handleLogout = async () => {
     await fetch("http://localhost:8080/api/auth/logout", {
@@ -42,61 +68,50 @@ function App() {
 
     await supabase.auth.signOut();
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    localStorage.clear();
+    sessionStorage.clear();
 
     setUser(null);
-    setShowLanding(true);
   };
 
-  const switchToRegister = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setShowLogin(false);
-      setIsTransitioning(false);
-    }, 300);
-  };
-
-  const switchToLogin = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setShowLogin(true);
-      setIsTransitioning(false);
-    }, 300);
-  };
-
-  // ✅ If logged in → homepage
-  if (user) {
-    return <HomePage user={user} onLogout={handleLogout} />;
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  // ✅ Landing page
-  if (showLanding) {
-    return (
-      <LandingPage
-        onGetStarted={() => setShowLanding(false)}
-      />
-    );
-  }
-
-  // ✅ Auth pages
   return (
-    <div className={`page-transition-wrapper ${isTransitioning ? "transitioning" : ""}`}>
-      {showLogin ? (
-        <div key="login" className="page-content">
-          <Login
-            setUser={setUser}
-            onSwitchToRegister={switchToRegister}
-          />
-        </div>
-      ) : (
-        <div key="register" className="page-content">
-          <Register onSwitchToLogin={switchToLogin} />
-        </div>
-      )}
-    </div>
+    <Routes>
+
+      {/* Landing */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* Auth */}
+      <Route path="/login" element={<Login setUser={setUser} />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Protected */}
+      <Route
+        path="/home"
+        element={
+          user ? (
+            <HomePage user={user} onLogout={handleLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          user ? (
+            <ProfilePage user={user} />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+
+    </Routes>
   );
 }
 
