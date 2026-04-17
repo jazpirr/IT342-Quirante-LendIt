@@ -103,7 +103,33 @@ public class BorrowRequestService {
             );
 
         }).toList();
-}
+    }
+
+    public List<BorrowRequestDTO> getRequestsByBorrower(Integer borrowerId) {
+        List<BorrowRequest> requests = repo.findByBorrowerId(borrowerId);
+
+        return requests.stream().map(req -> {
+
+            User user = userRepo.findById(req.getBorrowerId()).orElse(null);
+            Item item = itemRepo.findById(req.getItemId()).orElse(null);
+
+            String name = (user != null)
+                ? user.getfName() + " " + user.getlName()
+                : "Unknown";
+
+            return new BorrowRequestDTO(
+                req.getId(),
+                req.getItemId(),
+                req.getBorrowerId(),
+                name,
+                req.getStatus(),
+                user != null ? user.getImageUrl() : null,
+                req.getReturnDate(),
+                req.getRequestedAt()
+            );
+
+        }).toList();
+    }
 
     
 }
