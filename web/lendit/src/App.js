@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, use, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Login from "./pages/Login";
@@ -6,8 +6,11 @@ import Register from "./pages/Register";
 import HomePage from "./pages/Homepage";
 import LandingPage from "./pages/Landingpage";
 import ProfilePage from "./pages/ProfilePage";
+import BorrowItems from "./pages/BorrowItems";
 
 import { supabase } from "./lib/supabase";
+import MyItems from "./pages/MyItems";
+import Layout from "./components/Header";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -81,35 +84,35 @@ function App() {
   return (
     <Routes>
 
-      {/* Landing */}
+      {/* Public */}
       <Route path="/" element={<LandingPage />} />
-
-      {/* Auth */}
       <Route path="/login" element={<Login setUser={setUser} />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Protected */}
-      <Route
-        path="/home"
-        element={
-          user ? (
-            <HomePage user={user} onLogout={handleLogout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+      {/* 🔥 WRAP PROTECTED ROUTES */}
+      <Route element={<Layout user={user} onLogout={handleLogout} />}>
 
-      <Route
-        path="/profile"
-        element={
-          user ? (
-            <ProfilePage user={user} />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
-      />
+        <Route
+          path="/home"
+          element={user ? <HomePage user={user} /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/profile"
+          element={user ? <ProfilePage user={user} /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/borrow"
+          element={user ? <BorrowItems /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/myitems"
+          element={user ? <MyItems /> : <Navigate to="/login" />}
+        />
+
+      </Route>
 
     </Routes>
   );

@@ -83,6 +83,27 @@ public class BorrowRequestController {
         return ResponseEntity.ok(service.updateStatus(id, status));
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyRequests(
+            @RequestHeader(value = "Authorization", required = false) String authHeader
+    ) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing token");
+        }
+
+        String token = authHeader.substring(7);
+
+        Integer userId;
+        try {
+            userId = jwtUtil.extractUserId(token);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Invalid token");
+        }
+
+        return ResponseEntity.ok(service.getRequestsByBorrower(userId));
+    }
+
     
 
     

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate,useLocation  } from "react-router-dom";
 import {
   Home, BookOpen, Package, Plus, X, Info,
   LogOut, User, HandshakeIcon, AlertTriangle, Search
@@ -45,7 +46,6 @@ const LogoutPopup = ({ onConfirm, onCancel }) => (
 const HomePage = ({ user, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [announcementVisible, setAnnouncementVisible] = useState(true);
-  const [activeNav, setActiveNav] = useState("home");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [items, setItems] = useState([]);
@@ -55,6 +55,8 @@ const HomePage = ({ user, onLogout }) => {
   const [searchBarSticky, setSearchBarSticky] = useState(false);
 
   const searchSectionRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const firstName = user?.fName || "User";
   const initials = `${user?.fName?.[0] || ""}${user?.lName?.[0] || ""}`.toUpperCase() || "U";
@@ -131,51 +133,9 @@ const HomePage = ({ user, onLogout }) => {
   return (
     <div style={{ minHeight: "100vh", background: "var(--green-mist)" }}>
 
-      {/* NAVBAR */}
-      <nav className="navbar">
-        <span className="nav-logo-text">LendIt</span>
-        <div className="nav-links">
-          <button className={`nav-link ${activeNav === "home" ? "active" : ""}`} onClick={() => setActiveNav("home")}>
-            <Home size={15} /> Home
-          </button>
-          <button className={`nav-link ${activeNav === "borrow" ? "active" : ""}`} onClick={() => setActiveNav("borrow")}>
-            <BookOpen size={15} /> Borrow Items
-          </button>
-          <button className={`nav-link ${activeNav === "myitems" ? "active" : ""}`} onClick={() => setActiveNav("myitems")}>
-            <Package size={15} /> My Items
-          </button>
-        </div>
-        <div className="nav-right">
-          <button className="avatar-btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
-            {user?.imageUrl ? (
-              <img
-                src={user.imageUrl}
-                alt="Profile"
-                className="avatar-img"
-              />
-            ) : (
-              <span className="avatar-initials">{initials}</span>
-            )}
-          </button>
-          {dropdownOpen && (
-            <div className="dropdown">
-              <div className="dropdown-header">
-                <div className="dropdown-name">{user?.fName} {user?.lName}</div>
-                <div className="dropdown-email">{user?.email}</div>
-              </div>
-              <button className="dropdown-item" onClick={() => { setDropdownOpen(false); window.location.href = "/profile"; }}>
-                <User size={15} /> Profile
-              </button>
-              <button className="dropdown-item danger" onClick={() => { setDropdownOpen(false); setShowLogoutConfirm(true); }}>
-                <LogOut size={15} /> Logout
-              </button>
-            </div>
-          )}
-        </div>
-      </nav>
 
       {/* STICKY SEARCH BAR */}
-      {searchBarSticky && activeNav === "home" && (
+      {searchBarSticky && (
         <div className="sticky-search-bar">
           <div className="sticky-search-inner">
             <Search size={16} className="sticky-search-icon" />
@@ -197,9 +157,6 @@ const HomePage = ({ user, onLogout }) => {
 
       {/* MAIN */}
       <main className="dashboard-layout">
-        {activeNav === "myitems" ? (
-          <MyItems />
-        ) : (
           <>
             {/* Welcome Banner */}
             <div className="welcome-banner">
@@ -294,7 +251,6 @@ const HomePage = ({ user, onLogout }) => {
               )}
             </div>
           </>
-        )}
       </main>
 
       {/* FAB */}
