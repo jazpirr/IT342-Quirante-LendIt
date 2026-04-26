@@ -53,6 +53,7 @@ const HomePage = ({ user, onLogout }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchBarSticky, setSearchBarSticky] = useState(false);
+  const [myItems, setMyItems] = useState([]);
 
   const searchSectionRef = useRef(null);
   const navigate = useNavigate();
@@ -86,6 +87,22 @@ const HomePage = ({ user, onLogout }) => {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:8080/api/items/my", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => setMyItems(data))
+      .catch(err => console.error(err));
+  }, []);
+  const myTotal = myItems.length;
+  const myAvailable = myItems.filter(i => i.availability === "AVAILABLE").length;
+  const myBorrowed = myItems.filter(i => i.availability !== "AVAILABLE").length;
 
   const filteredItems = items.filter(item =>
     item.ownerId !== user?.id &&
@@ -163,13 +180,21 @@ const HomePage = ({ user, onLogout }) => {
               <div className="welcome-greeting">Welcome back, {firstName}!</div>
               <div className="welcome-sub">Here's what's available to borrow today.</div>
               <div className="welcome-stats">
-                <div className="welcome-stat">
-                  <div className="welcome-stat-num">{items.length}</div>
-                  <div className="welcome-stat-label">Items Listed</div>
-                </div>
-                <div className="welcome-stat">
-                  <div className="welcome-stat-num">0</div>
-                  <div className="welcome-stat-label">Active Borrows</div>
+                <div className="welcome-stats">
+                  <div className="welcome-stat">
+                    <div className="welcome-stat-num">{myTotal}</div>
+                    <div className="welcome-stat-label">Your Items</div>
+                  </div>
+
+                  <div className="welcome-stat">
+                    <div className="welcome-stat-num">{myAvailable}</div>
+                    <div className="welcome-stat-label">Available</div>
+                  </div>
+
+                  <div className="welcome-stat">
+                    <div className="welcome-stat-num">{myBorrowed}</div>
+                    <div className="welcome-stat-label">Borrowed</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -253,17 +278,6 @@ const HomePage = ({ user, onLogout }) => {
           </>
       </main>
 
-      {/* FAB */}
-      <button className="fab" onClick={() => setShowAddModal(true)}>
-        <Plus size={26} />
-      </button>
-
-      {showAddModal && (
-        <AddItemModal
-          onClose={() => setShowAddModal(false)}
-          onItemAdded={(newItem) => setItems(prev => [...prev, newItem])}
-        />
-      )}
 
       {selectedItem && (
         <ItemViewModal

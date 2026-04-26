@@ -1,82 +1,253 @@
-.borrow-container {
-  padding: 24px;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Fraunces:wght@700;900&display=swap');
+
+/* ─── LAYOUT ─── */
+.borrow-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
 }
 
-.borrow-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
-.borrow-list {
+/* ─── PAGE HEADER ─── */
+.borrow-page-header {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.borrow-card {
-  display: flex;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 12px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  animation: fadeUp 0.4s ease both;
 }
 
-.borrow-avatar img,
-.avatar-fallback {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
+.borrow-page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.borrow-page-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--green-deep), var(--teal));
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #10b981;
-  color: white;
-  font-weight: bold;
+  box-shadow: 0 6px 16px rgba(9, 121, 105, 0.3);
+  flex-shrink: 0;
 }
 
+.borrow-page-title {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text-dark);
+  letter-spacing: -0.4px;
+  margin: 0 0 3px;
+}
+
+.borrow-page-sub {
+  font-size: 14px;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+.borrow-page-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+  background: white;
+  border: 1px solid var(--card-border);
+  padding: 6px 16px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+/* ─── LIST ─── */
+.borrow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ─── CARD ─── */
+.borrow-card {
+  background: white;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeUp 0.4s ease both;
+}
+
+.borrow-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(9, 121, 105, 0.2);
+}
+
+/* ─── AVATAR ─── */
+.borrow-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-deep), var(--teal));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid var(--card-border);
+  box-shadow: 0 4px 10px rgba(9, 121, 105, 0.2);
+}
+
+.borrow-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.borrow-avatar-initials {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ─── DETAILS ─── */
 .borrow-details {
   flex: 1;
+  min-width: 0;
+}
+
+.borrow-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 12px;
 }
 
 .borrow-name {
-  margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.borrow-status {
-  margin: 4px 0;
-}
-
-.status {
-  margin-left: 6px;
-  font-weight: 600;
-}
-
-.status.pending {
-  color: orange;
-}
-
-.status.approved {
-  color: green;
-}
-
-.status.rejected {
-  color: red;
-}
-
-.borrow-date,
-.borrow-return {
+.borrow-item-name {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-mid);
+  margin: 0 0 10px;
 }
 
+/* ─── STATUS BADGE ─── */
+.borrow-status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.status-pending  { background: #fef9c3; color: #a16207; }
+.status-approved { background: var(--green-pale); color: var(--green-deep); }
+.status-rejected { background: #fef2f2; color: #dc2626; }
+.status-returned { background: #eff6ff; color: #2563eb; }
+
+/* ─── DATE CHIPS ─── */
+.borrow-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.borrow-date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-mid);
+  background: var(--green-pale);
+  border: 1px solid var(--card-border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ─── EMPTY STATE ─── */
 .borrow-empty {
   text-align: center;
-  margin-top: 40px;
-  color: #888;
+  padding: 60px 24px;
+  background: white;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp 0.4s ease both;
+}
+
+.borrow-empty-icon {
+  font-size: 48px;
+  margin-bottom: 14px;
+  opacity: 0.5;
+}
+
+.borrow-empty-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.borrow-empty-sub {
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+/* ─── LOADING ─── */
+.borrow-loading-wrap {
+  min-height: 100vh;
+  background: var(--green-mist);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+.borrow-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--green-pale);
+  border-top-color: var(--green-deep);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .borrow-layout { padding: 20px 16px 80px; }
+  .borrow-page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .borrow-page-title { font-size: 22px; }
+  .borrow-card { padding: 16px; }
+  .borrow-card-top { flex-wrap: wrap; }
 }
