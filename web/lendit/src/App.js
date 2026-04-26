@@ -12,6 +12,7 @@ import { supabase } from "./lib/supabase";
 import MyItems from "./pages/MyItems";
 import Layout from "./components/Header";
 
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
