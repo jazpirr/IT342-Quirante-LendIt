@@ -1,6 +1,7 @@
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useState } from "react";
 import { Home, BookOpen, Package, User, LogOut, Plus } from "lucide-react";
+import ChatWidget from "../components/ChatWidget";
 import "../css/Home.css";
 import AddItemModal from "../components/AddItemModal";
 
@@ -152,6 +153,8 @@ const Layout = ({ user, onLogout }) => {
           onClose={() => setShowAddModal(false)}
         />
       )}
+
+      <ChatWidget user={user} />
     </div>
   );
 };

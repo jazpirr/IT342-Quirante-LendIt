@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import "../css/Auth.css";
-import SuccessPopup from "../components/SucessPopup";
+import SuccessPopup from "../components/SuccessPopup";
 import { supabase } from "../lib/supabase";
 
 // ── LendIt Logo SVG ──
