@@ -9,7 +9,9 @@ import "../css/popup.css";
 import ProfilePage from "./ProfilePage";
 import AddItemModal from "../components/AddItemModal";
 import ItemViewModal from "../components/ItemViewModal";
+import SuccessPopup from "../components/SuccessPopup";
 import MyItems from "./MyItems";
+
 
 const ImgPlaceholder = ({ size = 40 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -46,6 +48,11 @@ const LogoutPopup = ({ onConfirm, onCancel }) => (
 const HomePage = ({ user, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [announcementVisible, setAnnouncementVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnnouncementVisible(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [items, setItems] = useState([]);
@@ -134,15 +141,19 @@ const HomePage = ({ user, onLogout }) => {
         })
       });
 
-      if (!res.ok) throw new Error("Failed request");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Request failed");
+      }
 
       alert("Request sent!");
+
     } catch (err) {
       console.error(err);
-      alert("Error sending request");
     }
   };
-
+  
   if (showProfile) {
     return <ProfilePage user={user} onBack={() => setShowProfile(false)} />;
   }
@@ -285,6 +296,18 @@ const HomePage = ({ user, onLogout }) => {
           user={user}
           onClose={() => setSelectedItem(null)}
           onBorrow={handleBorrow}
+          onMessage={() => {
+            window.dispatchEvent(new CustomEvent("openChat", {
+              detail: {
+                userId: selectedItem.ownerId,
+                userName: encodeURIComponent(selectedItem.ownerName || "User"),
+                itemId: selectedItem.itemId,
+                itemName: encodeURIComponent(selectedItem.name),
+                itemImage: encodeURIComponent(selectedItem.imageUrl || ""),
+              }
+            }));
+            setSelectedItem(null);
+          }}
         />
       )}
 

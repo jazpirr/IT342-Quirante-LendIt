@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, CheckCircle, ArrowRight, Phone } from "lucide-react";
 import "../css/Auth.css";
-import SuccessPopup from "../components/SucessPopup";
+import SuccessPopup from "../components/SuccessPopup";
 import { supabase } from "../lib/supabase";
 
 const LendItLogo = () => (

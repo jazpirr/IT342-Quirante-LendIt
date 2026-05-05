@@ -11,6 +11,7 @@ const AddItemModal = ({ onClose, onItemAdded }) => {
   const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef();
+  
 
   const handleFile = (f) => {
     if (!f || !f.type.startsWith("image/")) return;
@@ -51,7 +52,9 @@ const AddItemModal = ({ onClose, onItemAdded }) => {
 
     const newItem = await res.json();
     setLoading(false);
-    onItemAdded(newItem);
+    if (onItemAdded) {
+      onItemAdded(newItem);
+    }
     onClose();
   };
 
