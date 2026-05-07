@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { Package, MessageCircle, HandshakeIcon } from "lucide-react";
+import { Package, MessageCircle, HandshakeIcon, Flag } from "lucide-react";
 import "../css/AddItemModal.css";
+import ReportModal from "./ReportModal";
 
 const ItemViewModal = ({ item, user, onClose, onMessage, onBorrow, viewOnly = false }) => {
   const [images, setImages] = useState([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [returnDate, setReturnDate] = useState("");
-  const [alreadyRequested, setAlreadyRequested] = useState(false); 
+  const [alreadyRequested, setAlreadyRequested] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -138,8 +140,38 @@ const ItemViewModal = ({ item, user, onClose, onMessage, onBorrow, viewOnly = fa
             </div>
           )}
 
+          {/* Report button — visible for non-owners */}
+          {user && item.ownerId !== user.id && (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+              <button
+                className="ivm-btn-report"
+                onClick={() => setShowReport(true)}
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 5,
+                  fontSize: 12, color: "#999", padding: "4px 8px",
+                  borderRadius: 8, transition: "color 0.2s"
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = "#c0392b"}
+                onMouseLeave={e => e.currentTarget.style.color = "#999"}
+              >
+                <Flag size={12} /> Report this item
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
+
+      {showReport && (
+        <ReportModal
+          reportType="ITEM"
+          itemId={item.itemId}
+          itemName={item.name}
+          reportedUserId={item.ownerId}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   );
 };

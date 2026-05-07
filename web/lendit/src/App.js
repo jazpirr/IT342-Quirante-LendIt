@@ -7,6 +7,7 @@ import HomePage from "./pages/Homepage";
 import LandingPage from "./pages/Landingpage";
 import ProfilePage from "./pages/ProfilePage";
 import BorrowItems from "./pages/BorrowItems";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import { supabase } from "./lib/supabase";
 import MyItems from "./pages/MyItems";
@@ -90,12 +91,26 @@ function App() {
       <Route path="/login" element={<Login setUser={setUser} />} />
       <Route path="/register" element={<Register />} />
 
+      {/* Admin — standalone, no regular layout */}
+      <Route
+        path="/admin"
+        element={
+          user?.role === "ADMIN"
+            ? <AdminDashboard user={user} onLogout={handleLogout} />
+            : <Navigate to={user ? "/home" : "/login"} />
+        }
+      />
+
       {/* 🔥 WRAP PROTECTED ROUTES */}
       <Route element={<Layout user={user} onLogout={handleLogout} />}>
 
         <Route
           path="/home"
-          element={user ? <HomePage user={user} /> : <Navigate to="/login" />}
+          element={
+            !user ? <Navigate to="/login" /> :
+            user.role === "ADMIN" ? <Navigate to="/admin" /> :
+            <HomePage user={user} />
+          }
         />
 
         <Route
