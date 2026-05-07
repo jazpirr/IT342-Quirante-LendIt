@@ -28,6 +28,12 @@ public class User {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(nullable = false)
+    private String role = "USER";
+
+    @Column(nullable = false)
+    private boolean blocked = false;
+
     public User() {}
 
     public User(Integer id, String fName, String lName, String email, String password) {
@@ -91,5 +97,21 @@ public class User {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

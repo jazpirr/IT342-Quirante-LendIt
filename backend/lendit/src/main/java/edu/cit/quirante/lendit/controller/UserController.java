@@ -61,6 +61,10 @@ public class UserController {
 
         User user = userOpt.get();
 
+        if (user.isBlocked()) {
+            return ResponseEntity.status(403).body("Your account has been blocked. Please contact support.");
+        }
+
         // 🚨 Detect Google-only account (no password set yet)
         if (user.getPassword() == null || passwordEncoder.matches("GOOGLE_USER", user.getPassword())) {
             return ResponseEntity.status(400).body("This account uses Google login. Please continue with Google or set a password.");
@@ -95,6 +99,10 @@ public class UserController {
 
         if (userOpt.isPresent()) {
             user = userOpt.get();
+
+            if (user.isBlocked()) {
+                return ResponseEntity.status(403).body("Your account has been blocked. Please contact support.");
+            }
 
             if (user.getImageUrl() == null && imageUrl != null) {
                 user.setImageUrl(imageUrl);

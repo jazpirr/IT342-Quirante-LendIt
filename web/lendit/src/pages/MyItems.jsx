@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import ItemViewModal from "../components/ItemViewModal";
+import ReportModal from "../components/ReportModal";
 import "../css/MyItems.css";
-import { Package, Clock, CheckCircle, XCircle, ChevronRight } from "lucide-react";
+import { Package, Clock, CheckCircle, XCircle, ChevronRight, Flag } from "lucide-react";
 
 const ImgPlaceholder = () => (
   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -26,6 +27,7 @@ const MyItems = () => {
   const [items, setItems]         = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [expanded, setExpanded]   = useState({});
+  const [reportTarget, setReportTarget] = useState(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => { fetchMyItems(); }, []);
@@ -217,6 +219,15 @@ const MyItems = () => {
                               </button>
                             </div>
                           )}
+                          {req.status === "APPROVED" && req.returnDate && new Date(req.returnDate) < new Date() && (
+                            <button
+                              className="mi-btn-report-nonreturn"
+                              onClick={() => setReportTarget({ req, item })}
+                              title="Report non-return"
+                            >
+                              <Flag size={12} /> Report
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))
@@ -232,6 +243,16 @@ const MyItems = () => {
             item={selectedItem}
             onClose={() => setSelectedItem(null)}
             viewOnly
+          />
+        )}
+
+        {reportTarget && (
+          <ReportModal
+            reportType="NON_RETURN"
+            itemId={reportTarget.item.itemId}
+            itemName={reportTarget.item.name}
+            reportedUserId={reportTarget.req.borrowerId}
+            onClose={() => setReportTarget(null)}
           />
         )}
       </main>
