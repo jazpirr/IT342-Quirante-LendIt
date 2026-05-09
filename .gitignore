@@ -4,3 +4,4 @@
 .kotlinc/
 .kotlin/
 build/
+.claude
