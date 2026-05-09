@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(git ls-tree *)",
-      "Bash(findstr /i \"emoji\")"
+      "Bash(findstr /i \"emoji\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\jazph\\\\OneDrive\\\\Desktop\\\\IT342-Quirante-LendIt\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

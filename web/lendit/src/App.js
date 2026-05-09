@@ -1,17 +1,17 @@
-import { Routes, Route, use, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import HomePage from "./pages/Homepage";
-import LandingPage from "./pages/Landingpage";
-import ProfilePage from "./pages/ProfilePage";
-import BorrowItems from "./pages/BorrowItems";
-import AdminDashboard from "./pages/AdminDashboard";
+import Login from "./features/auth/Login";
+import Register from "./features/auth/Register";
+import HomePage from "./features/home/Homepage";
+import LandingPage from "./features/auth/Landingpage";
+import ProfilePage from "./features/profile/ProfilePage";
+import BorrowItems from "./features/borrow/BorrowItems";
+import AdminDashboard from "./features/admin/AdminDashboard";
+import MyItems from "./features/items/MyItems";
+import Layout from "./shared/components/Header";
 
 import { supabase } from "./lib/supabase";
-import MyItems from "./pages/MyItems";
-import Layout from "./components/Header";
 
 
 function App() {
